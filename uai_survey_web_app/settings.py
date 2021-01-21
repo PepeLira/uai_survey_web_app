@@ -40,9 +40,10 @@ INSTALLED_APPS = [
 
     # 3rd Party
     'crispy_forms',
+    'bootstrap4',
 
     # local
-
+                                                                                   
     'users.apps.UsersConfig',
     'surveys.apps.SurveysConfig',
     'pages.apps.PagesConfig',
