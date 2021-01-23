@@ -1,10 +1,9 @@
 from django.urls import path
 
-from .views import HomePageView #, upload_csv
+from .views import HomePageView
 
 urlpatterns = [
 
 path('', HomePageView.as_view(), name='home'),
-# path('upload/csv/', upload_csv, name='upload_csv'),
 
 ]

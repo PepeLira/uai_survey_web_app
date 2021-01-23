@@ -27,7 +27,7 @@ class Survey(models.Model):
     description = models.TextField(blank=True)
     upload_date = models.DateTimeField(auto_now_add=True)
     start_date = models.DateField()
-    is_open = models.BooleanField(default=False)
+    is_activated = models.BooleanField(default=False)
     csv_file = models.FileField(upload_to='surveys_csvs/')
 
     def __str__(self):

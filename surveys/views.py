@@ -15,11 +15,11 @@ def get_csv_survey_file(request):
     if form.is_valid():
         form.save()
         form = SurveyModelForm()
-        obj = Survey.objects.get(is_open=False)
-        # with open(obj.csv_file.path, 'r') as f:
-        #     reader = csv.reader(f)
-        #     print(reader)
-
+        obj = Survey.objects.get(is_activated=False)
+        with open(obj.csv_file.path, 'r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            for i, row in enumerate(reader):
+                print(row)
         # csv_file = request.FILES.get("csv_file")
         #
         # if not csv_file.name.endswith('.csv'):

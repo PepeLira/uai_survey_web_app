@@ -6,7 +6,7 @@ class DateInput(forms.DateInput):
 class SurveyModelForm(forms.ModelForm):
     class Meta:
         model = Survey
-        fields = ('facultad', 'description', 'start_date', 'is_open', 'csv_file',)
+        fields = ('csv_file', 'facultad', 'description', 'start_date', )
         widgets = {
             'start_date': DateInput,
         }
