@@ -2,15 +2,40 @@ from django.db import models
 
 
 class Survey(models.Model):
+    ESCUELA_DE_NEGOCIOS = 'Escuela de Negocios'
+    FACULTAD_DE_DERECHO = 'Facultad de Derecho'
+    FACULTAD_DE_INGENIERIA_Y_CIENCIAS = 'Facultad de Ingeniería y Ciencias'
+    FACULTAD_DE_ARTES_LIBERALES = 'Facultad Artes Liberales'
+    ESCUELA_DE_GOBIERNO = 'Escuela de Gobierno'
+    ESCUELA_DE_PSICOLOGIA = 'Escuela de Psicología'
+    ESCUELA_DE_COMUNICACIONES_Y_PERIODISMO = 'Escuela de Comunicaciones y Periodismo'
+    DESIGNLAB = 'DesignLab'
+
+    Facultades = [
+        (ESCUELA_DE_NEGOCIOS, ESCUELA_DE_NEGOCIOS),
+        (FACULTAD_DE_DERECHO, FACULTAD_DE_DERECHO),
+        (FACULTAD_DE_INGENIERIA_Y_CIENCIAS, FACULTAD_DE_INGENIERIA_Y_CIENCIAS),
+        (FACULTAD_DE_ARTES_LIBERALES, FACULTAD_DE_ARTES_LIBERALES),
+        (ESCUELA_DE_GOBIERNO, ESCUELA_DE_GOBIERNO),
+        (ESCUELA_DE_PSICOLOGIA, ESCUELA_DE_PSICOLOGIA),
+        (ESCUELA_DE_COMUNICACIONES_Y_PERIODISMO, ESCUELA_DE_COMUNICACIONES_Y_PERIODISMO),
+        (DESIGNLAB, DESIGNLAB),
+    ]
+
     title = models.CharField(max_length=255)
+    facultad = models.CharField(max_length=40, choices=Facultades)
     description = models.TextField(blank=True)
     upload_date = models.DateTimeField(auto_now_add=True)
     start_date = models.DateField()
-    end_date = models.DateField()
     is_open = models.BooleanField(default=False)
+    csv_file = models.FileField(upload_to='surveys_csvs/')
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        self.title = f'Encuesta {self.facultad} - {self.start_date}'
+        super().save(*args, **kwargs)
 
 
 class Question(models.Model):
