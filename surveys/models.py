@@ -1,4 +1,5 @@
 from django.db import models
+from .validators import validate_csv_file_extension
 
 
 class Survey(models.Model):
@@ -24,11 +25,11 @@ class Survey(models.Model):
 
     title = models.CharField(max_length=255)
     facultad = models.CharField(max_length=40, choices=Facultades)
-    description = models.TextField(blank=True)
+    description = models.TextField(max_length=300, blank=True)
     upload_date = models.DateTimeField(auto_now_add=True)
     start_date = models.DateField()
     is_activated = models.BooleanField(default=False)
-    csv_file = models.FileField(upload_to='surveys_csvs/')
+    csv_file = models.FileField(upload_to='surveys_csvs/', validators=[validate_csv_file_extension])
 
     def __str__(self):
         return self.title
@@ -40,6 +41,7 @@ class Survey(models.Model):
 
 class Question(models.Model):
     question_text = models.CharField(max_length=300)
+    type = models.CharField(max_length=300)
 
     def __str__(self):
         return self.question_text
@@ -102,22 +104,23 @@ class Answer(models.Model):
 
 
 class Query(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
+    name = models.CharField(max_length=150)
+    description = models.CharField(max_length=300)
+    graph_type = models.CharField(max_length=300)
 
     def __str__(self):
         return self.name
 
 
-class QuerySurvey(models.Model):
-    survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
-    query = models.ForeignKey(Question, on_delete=models.CASCADE)
+class QuerySurveyQuestion(models.Model):
+    survey_question = models.ForeignKey(SurveyQuestion, on_delete=models.CASCADE)
+    query = models.ForeignKey(Query, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = (("survey", "query"),)
+        unique_together = (("survey_question", "query"),)
 
     def __str__(self):
-        return self.survey, self.query
+        return self.survey_question, self.query
 
 
 class Privileges(models.Model):
@@ -140,10 +143,41 @@ class Privileges(models.Model):
 
 class PrivilegesQuery(models.Model):
     privileges = models.ForeignKey(Privileges, on_delete=models.CASCADE)
-    query = models.ForeignKey(Question, on_delete=models.CASCADE)
+    query = models.ForeignKey(Query, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (("privileges", "query"),)
 
     def __str__(self):
         return self.privileges, self.query
+
+
+class EquivalentQuestion(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='question')
+    eq_question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='eq_question')
+
+    class Meta:
+        unique_together = (("question", "eq_question"),)
+
+    def __str__(self):
+        return self.question, self.eq_question
+
+
+class Dashboard(models.Model):
+    name = models.CharField(max_length=150)
+    description = models.CharField(max_length=300, blank=True)
+    period = models.DateField()
+
+    def __str__(self):
+        return self.name
+
+
+class DashboardQuery(models.Model):
+    dashboard = models.ForeignKey(Dashboard, on_delete=models.CASCADE)
+    query = models.ForeignKey(Query, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (("dashboard", "query"),)
+
+    def __str__(self):
+        return self.dashboard, self.query

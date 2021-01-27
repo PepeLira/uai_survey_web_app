@@ -7,6 +7,9 @@ name = "pypi"
 django = "==3.1.0"
 django-crispy-forms = "==1.8.1"
 django-bootstrap4 = "*"
+numpy = "*"
+pandas = "*"
+django-pandas = "*"
 
 [dev-packages]
 
