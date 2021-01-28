@@ -59,20 +59,22 @@ def create_models_from_csv(df):
         elif first_row_is_question:
             if get_answer_type(df, column) == 'binary':
                 questions_df = questions_df.append(
-                    pd.DataFrame({'question': [df.loc[1, df.columns[-1]]],
+                    pd.DataFrame({'question': [questions_df.question.to_list()[-1]],
                                   'type': ['Multiple choice questions'],
                                   'choice': [second_cell]}), ignore_index=True)
                 # La segunda es RESPUESTA de Selección Multiple
             else:
                 questions_df = questions_df.append(
-                    pd.DataFrame({'question': [df.loc[1, df.columns[-1]]],
+                    pd.DataFrame({'question': [questions_df.question.to_list()[-1]],
                                   'type': ['Multiple choice questions'],
                                   'choice': [second_cell]}), ignore_index=True)
                 # La segunda es RESPUESTA alternativa de texto (Otro(especifique))
-        # else:
-        #     print()
-        #     # La segunda es pregunta de texto
-        #     first_row_is_question = False
+        else:
+            questions_df = questions_df.append(
+                pd.DataFrame({'question': [second_cell], 'type': ['Open-Ended Text Response']}), ignore_index=True)
+
+            # La segunda es pregunta de texto
+            first_row_is_question = False
     return questions_df
 
 
@@ -84,12 +86,14 @@ def get_csv_survey_file(request):
         form.save()
         form = SurveyModelForm()
         obj = Survey.objects.get(is_activated=False)
+        obj.is_activated = True
+        obj.save()
 
-        survey_df = pd.read_csv(obj.csv_file.path, delimiter=',', encoding='utf8', header=None)
+        survey_df = pd.read_csv(obj.csv_file.path, delimiter=';', encoding='utf8', header=None)
 
         print(create_models_from_csv(survey_df).to_string())
 
-        obj.is_activated = True
-        obj.save()
+        # obj.is_activated = True
+        # obj.save()
 
     return render(request, "upload_csv.html", {'form': form})
