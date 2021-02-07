@@ -2,16 +2,69 @@
 
 {% load crispy_forms_tags %}
 
+
+
+
 {% block title %}Carga de Encuestas{% endblock title %}
 
 
 {% block content %}
 <h2>Carga de Encuestas</h2>
-<form action="{% url 'upload_csv' %}" method="POST" enctype="multipart/form-data" class="form-horizontal">
+<!--<form action="{% url 'upload_csv' %}" method="POST" enctype="multipart/form-data" class="form-horizontal">-->
+<form enctype="multipart/form-data" method="POST" id="surveyForm" data-careers-url="{% url 'ajax_load_careers' %}"
+      action="{% url 'upload_csv' %}" class="form-horizontal">
     {% csrf_token %}
-    {{ form|crispy }}
+    {{ survey_form|crispy }}
+    {{ survey_career_form_set.management_form }}
+    {% for form in survey_career_form_set %}
+    <div class="career-form">
+        {{ form|crispy}}
+    </div>
+    {% endfor %}
+
+
+    <button id="add-form" type="button" class="btn btn-secondary">Agregar Carrera</button>
+
     <button type="submit" class="btn btn-primary">Confirmar</button>
 </form>
 {% endblock content %}
 
+{% block javascript %}
+    <script>
+        $("#id_faculty").change(function () {
+          var url = $("#surveyForm").attr("data-careers-url");
+          var facultyId = $(this).val();
+
+          $.ajax({
+            url: url,
+            data: {
+              'faculty': facultyId
+            },
+            success: function (data) {
+              $('[id^="id_form-"][id$="-career"]').html(data);
+            }
+          });
+        });
+
+        let careerForm = document.querySelectorAll(".career-form");
+        let container = document.querySelector("#surveyForm");
+        let addButton = document.querySelector("#add-form");
+        let totalForms = document.querySelector("#id_form-TOTAL_FORMS");
+
+        let formNum = careerForm.length-1;
+        addButton.addEventListener('click', addForm);
+
+        function addForm(e){
+            e.preventDefault();
+
+            let newForm = careerForm[0].cloneNode(true);
+            let formRegex = RegExp(`form-(\\d){1}-`,'g');
+
+            formNum++;
+            newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`);
+            container.insertBefore(newForm, addButton);
+
+            totalForms.setAttribute('value', `${formNum+1}`)};
+    </script>
+{% endblock %}
 

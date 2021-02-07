@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+<!doctype html>
+{% load static %}
 <html>
 <head>
   <meta charset="utf-8">
@@ -6,10 +7,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
   <!-- Bootstrap CSS -->
-  {# Cargamos la librería #}
   {% load bootstrap4 %}
   {# CSS Bootstrap #}
   {% bootstrap_css %}
+
+  <style>
+    .bc {
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+    .text-muted {
+      background-color: #f8f9fa!important;
+    }
+
+  </style>
+
+  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+  {% block stylesheet %}{% endblock %}
   <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous"> -->
 </head>
 <body>
@@ -21,6 +35,9 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       {% if user.is_authenticated %}
         <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+              <a class="nav-link" href="{% url 'admin_menu' %}">Admin</a>
+          </li>
           <li class="nav-item">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               {{ user.username }}
@@ -44,6 +61,7 @@
       {% endif %}
     </div>
   </nav>
+
   <main>
     {% if messages %}
       <ul class="messages">
@@ -52,18 +70,27 @@
           {% endfor %}
       </ul>
     {% endif %}
-    <div class="container">
+    <div class="container bc">
       {% block content %}
       {% endblock content %}
     </div>
   </main>
 
+  <footer class="text-muted">
+    <div class="container">
+      <p class="float-right">
+        <a href="#">Back to top</a>
+      </p>
+      <p>Album example is © Bootstrap, but please download and customize it for yourself!</p>
+      <p>New to Bootstrap? <a href="../../">Visit the homepage</a> or read our <a href="../../getting-started/">getting started guide</a>.</p>
+    </div>
+  </footer>
+
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   {% bootstrap_javascript jquery='full' %}
-
-  <!--  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>-->
-  <!--  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>-->
-  <!--  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>-->
+  <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block javascript %}{% endblock %}
 </body>
 </html>

@@ -1,10 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Admin Menu{% endblock title %}
+
+
+{% block content %}
+<ul>
+    <li><a href="{% url 'upload_csv' %}"> Agregar Encuestas + </a></li>
+    <li><a href="#"> Administrar Dashboards </a></li>
+    <li><a href="#"> Administrar Encuestas </a></li>
+    <li><a href="#"> Privilegios De Usuario </a></li>
+    <li><a href="#"> Facultades / Carreras </a></li>
+    <li><a href="#"> Mi Perfil </a></li>
+
+</ul>
+
+{% endblock content%}

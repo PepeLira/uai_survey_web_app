@@ -1,10 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<option value="">---------</option>
+{% for career in careers %}
+<option value="{{ career.pk }}">{{ career.name }}</option>
+{% endfor %}
+
