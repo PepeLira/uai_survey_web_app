@@ -37,15 +37,11 @@ lo que facilitará la comprensión y el fujo de trabajo de este proyecto.
 El modelo de la base de datos fue diseñado sobre tres ideas generales: "Control de Usuarios", 
 "Administración de Encuestas" y "Carga de Encuestas". Siguiendo el siguiente modelo ER
 
-<div class="row">
-  <div class="column">
-    <img src="blob/master/logo-uai.png" alt="drawing" width="300" height="112"/>
-  </div>
-  <div class="column">
-    <img src="blob/master/Logo_Alumni.png" alt="drawing" width="367" height="112"/>
-  </div>
-</div>
 
+<p float="left">
+  <img src="blob/master/logo-uai.png" alt="drawing" width="300" height="112"/>
+  <img src="blob/master/Logo_Alumni.png" alt="drawing" width="367" height="112"/>
+</p>
 
 [Logo_UAI]:(blob/master/logo-uai.png)
 
