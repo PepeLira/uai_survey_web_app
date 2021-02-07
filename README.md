@@ -38,5 +38,5 @@ El modelo de la base de datos fue diseñado sobre tres ideas generales: "Control
 "Administración de Encuestas" y "Carga de Encuestas". Siguiendo el siguiente modelo ER
 
 
-![Logo_UAI](logo-uai.png?raw=true)
+![Logo_UAI](../blob/master/logo-uai.png?raw=true)
   
