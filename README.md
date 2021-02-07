@@ -39,4 +39,6 @@ El modelo de la base de datos fue diseñado sobre tres ideas generales: "Control
 
 &nbsp;  
 &nbsp;  
+
+![Logo_UAI](uai_survey_web_app/tree/main/markdown/logos/logo-uai.png?raw=true)
 ![Logo_UAI](https://github.com/PepeLira/uai_survey_web_app/tree/main/markdown/logos/logo-uai.png)
