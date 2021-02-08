@@ -81,7 +81,7 @@ y ingresamos al link que nos entrega la consola
     $ http://127.0.0.1:8000/
 
 
-### Alcance y espectativas 
+### Alcance y Expectativas 
 ___
 
 
