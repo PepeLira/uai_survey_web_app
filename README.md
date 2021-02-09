@@ -81,8 +81,19 @@ y ingresamos al link que nos entrega la consola
     $ http://127.0.0.1:8000/
 
 
-### Alcance y Expectativas 
+### Comentarios
 ___
+
+Existen múltiples maneras para alimentar la base de datos de una aplicación, en este proyecto se optó por 
+trabajar importando tablas de datos en ".csv" pensando en los medios en los que se puede obtener la 
+información de SurveyMonkey y en la flexibilidad que otorga no depender de una API en concreto. 
+Sin embargo, esa flexibilidad significa también que sea necesario realizar mantención a este sistema 
+cada vez que la estructura de las tablas es modificada.
+
+Para prevenir esta arbitrariedad una de las mejores soluciones sería realizar las encuestas dentro de esta 
+misma plataforma, centralizando de esta manera la fuente de la información y permitiendo trabajar y controlar 
+la información con una menor carga de trabajo 
+
 
 
 
