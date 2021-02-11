@@ -1,19 +1,25 @@
 {% extends 'base.html' %}
 
-{% load crispy_forms_tags %}
-
 {% block title %}Admin Menu{% endblock title %}
 
 
 {% block content %}
-<ul>
-    <li><a href="{% url 'upload_csv' %}"> Agregar Encuestas + </a></li>
-    <li><a href="#"> Administrar Dashboards </a></li>
-    <li><a href="#"> Administrar Encuestas </a></li>
-    <li><a href="#"> Privilegios De Usuario </a></li>
-    <li><a href="#"> Facultades / Carreras </a></li>
-    <li><a href="#"> Mi Perfil </a></li>
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Admin Menu</h6>
+    </div>
+    <div class="card-body">
+        <ul>
+            <li><a href="{% url 'upload_csv' %}"> Agregar Encuestas + </a></li>
+            <li><a href="#"> Administrar Dashboards </a></li>
+            <li><a href="{% url 'surveys_index' %}"> Administrar Encuestas </a></li>
+            <li><a href="#"> Privilegios De Usuario </a></li>
+            <li><a href="#"> Facultades / Carreras </a></li>
+            <li><a href="#"> Mi Perfil </a></li>
 
-</ul>
+        </ul>
+    </div>
+</div>
+
 
 {% endblock content%}

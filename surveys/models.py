@@ -25,25 +25,6 @@ class SurveyCategory(models.Model):
 
 
 class Survey(models.Model):
-    # ESCUELA_DE_NEGOCIOS = 'Escuela de Negocios'
-    # FACULTAD_DE_DERECHO = 'Facultad de Derecho'
-    # FACULTAD_DE_INGENIERIA_Y_CIENCIAS = 'Facultad de Ingeniería y Ciencias'
-    # FACULTAD_DE_ARTES_LIBERALES = 'Facultad Artes Liberales'
-    # ESCUELA_DE_GOBIERNO = 'Escuela de Gobierno'
-    # ESCUELA_DE_PSICOLOGIA = 'Escuela de Psicología'
-    # ESCUELA_DE_COMUNICACIONES_Y_PERIODISMO = 'Escuela de Comunicaciones y Periodismo'
-    # DESIGNLAB = 'DesignLab'
-    #
-    # facultades = [
-    #     (ESCUELA_DE_NEGOCIOS, ESCUELA_DE_NEGOCIOS),
-    #     (FACULTAD_DE_DERECHO, FACULTAD_DE_DERECHO),
-    #     (FACULTAD_DE_INGENIERIA_Y_CIENCIAS, FACULTAD_DE_INGENIERIA_Y_CIENCIAS),
-    #     (FACULTAD_DE_ARTES_LIBERALES, FACULTAD_DE_ARTES_LIBERALES),
-    #     (ESCUELA_DE_GOBIERNO, ESCUELA_DE_GOBIERNO),
-    #     (ESCUELA_DE_PSICOLOGIA, ESCUELA_DE_PSICOLOGIA),
-    #     (ESCUELA_DE_COMUNICACIONES_Y_PERIODISMO, ESCUELA_DE_COMUNICACIONES_Y_PERIODISMO),
-    #     (DESIGNLAB, DESIGNLAB),
-    # ]
 
     title = models.CharField(max_length=100)
     # subtitle = models.CharField(max_length=100, blank=True)

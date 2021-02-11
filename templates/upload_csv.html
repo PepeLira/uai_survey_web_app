@@ -4,29 +4,31 @@
 
 
 
-
 {% block title %}Carga de Encuestas{% endblock title %}
 
-
 {% block content %}
-<h2>Carga de Encuestas</h2>
+<h1 class="h3 mb-2 text-gray-800">Carga de Encuestas</h1>
+<p class="mb-4">Ingrese los siguientes datos para poder cargar una nueva encuesta:</p>
 <!--<form action="{% url 'upload_csv' %}" method="POST" enctype="multipart/form-data" class="form-horizontal">-->
-<form enctype="multipart/form-data" method="POST" id="surveyForm" data-careers-url="{% url 'ajax_load_careers' %}"
-      action="{% url 'upload_csv' %}" class="form-horizontal">
-    {% csrf_token %}
-    {{ survey_form|crispy }}
-    {{ survey_career_form_set.management_form }}
-    {% for form in survey_career_form_set %}
-    <div class="career-form">
-        {{ form|crispy}}
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <form enctype="multipart/form-data" method="POST" id="surveyForm" data-careers-url="{% url 'ajax_load_careers' %}"
+              action="{% url 'upload_csv' %}" class="form-horizontal">
+            {% csrf_token %}
+            {{ survey_form|crispy }}
+            {{ survey_career_form_set.management_form }}
+            {% for form in survey_career_form_set %}
+            <div class="career-form">
+                {{ form|crispy}}
+            </div>
+            {% endfor %}
+
+            <button id="add-form" type="button" class="btn btn-secondary">Agregar Carrera</button>
+
+            <button type="submit" class="btn btn-primary">Confirmar</button>
+        </form>
     </div>
-    {% endfor %}
-
-
-    <button id="add-form" type="button" class="btn btn-secondary">Agregar Carrera</button>
-
-    <button type="submit" class="btn btn-primary">Confirmar</button>
-</form>
+</div>
 {% endblock content %}
 
 {% block javascript %}

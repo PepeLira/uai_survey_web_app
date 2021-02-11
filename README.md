@@ -92,7 +92,7 @@ cada vez que la estructura de las tablas es modificada.
 
 Para prevenir esta arbitrariedad una de las mejores soluciones sería realizar las encuestas dentro de esta 
 misma plataforma, centralizando de esta manera la fuente de la información y permitiendo trabajar y controlar 
-la información con una menor carga de trabajo 
+la información con una menor carga de trabajo.
 
 
 
