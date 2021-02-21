@@ -24,8 +24,14 @@ class SurveyCategory(models.Model):
         return self.name
 
 
-class Survey(models.Model):
+class Period(models.Model):
+    name = models.CharField(max_length=150)
 
+    def __str__(self):
+        return self.name
+
+
+class Survey(models.Model):
     title = models.CharField(max_length=100)
     # subtitle = models.CharField(max_length=100, blank=True)
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
@@ -118,10 +124,40 @@ class Answer(models.Model):
         return template.format(self)
 
 
+class Privileges(models.Model):
+    EGRESADO = 1
+    EQUIPO_ALUMNI = 3
+    CORPORATIVO_UAI = 2
+
+    AVAILABLE_PRIVILEGES = [
+        (EGRESADO, 'Egresado'),
+        (EQUIPO_ALUMNI, 'Equipo Alumni'),
+        (CORPORATIVO_UAI, 'Corporativo UAI'),
+    ]
+    type = models.IntegerField(choices=AVAILABLE_PRIVILEGES,
+                               default=EGRESADO, unique=True)
+
+    def __str__(self):
+        return self.AVAILABLE_PRIVILEGES[self.type - 1][1]
+
+
 class Query(models.Model):
+    BAR = 'Bar Chart'
+    COMPARATIVE_BAR = 'Comparative Bar Chart'
+    PIE = 'Pie Chart'
+    TABLE = 'Table'
+
+    AVAILABLE_GRAPH_TYPES = [
+        ('Bar Chart', BAR),
+        ('Comparative Bar Chart', COMPARATIVE_BAR),
+        ( 'Pie Chart', PIE),
+        ( 'Table', TABLE),
+    ]
+
     name = models.CharField(max_length=150)
-    description = models.CharField(max_length=300)
-    graph_type = models.CharField(max_length=300)
+    description = models.TextField(max_length=300)
+    graph_type = models.CharField(max_length=300, choices=AVAILABLE_GRAPH_TYPES, default='Table')
+    privilege = models.ForeignKey(Privileges, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -139,35 +175,6 @@ class QuerySurveyQuestion(models.Model):
         return template.format(self)
 
 
-class Privileges(models.Model):
-    EGRESADO = 1
-    EQUIPO_ALUMNI = 3
-    CORPORATIVO_UAI = 2
-
-    AVAILABLE_PRIVILEGES = [
-        (EGRESADO, 'Egresado'),
-        (EQUIPO_ALUMNI, 'Equipo Alumni'),
-        (CORPORATIVO_UAI, 'Corporativo UAI'),
-    ]
-    type = models.IntegerField(choices=AVAILABLE_PRIVILEGES,
-                            default=EGRESADO)
-
-    def __str__(self):
-        return self.AVAILABLE_PRIVILEGES[self.type-1][1]
-
-
-class PrivilegesQuery(models.Model):
-    privileges = models.ForeignKey(Privileges, on_delete=models.CASCADE)
-    query = models.ForeignKey(Query, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = (("privileges", "query"),)
-
-    def __str__(self):
-        template = f'{self.privileges} {self.query}'
-        return template.format(self)
-
-
 class EquivalentQuestion(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='question')
     eq_question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='eq_question')
@@ -182,8 +189,8 @@ class EquivalentQuestion(models.Model):
 
 class Dashboard(models.Model):
     name = models.CharField(max_length=150)
-    description = models.CharField(max_length=300, blank=True)
-    period = models.DateField()
+    description = models.TextField(max_length=300, blank=True)
+    period = models.ForeignKey(Period, on_delete=models.SET_NULL, blank=True, related_name='period', null=True)
 
     def __str__(self):
         return self.name

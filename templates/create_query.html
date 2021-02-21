@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+
+
+{% block title %}Nueva Consulta{% endblock title %}
+
+{% block content %}
+<div class="">
+	<div class="page-title">
+		<div class="title_left">
+			<h3>Nueva Consulta</h3>
+		</div>
+	</div>
+	<div class="clearfix"></div>
+	<div class="row">
+		<div class="col-md-12 col-sm-12 ">
+			<div class="x_panel">
+				<div class="x_title">
+					<h2>Campos Consulta</h2>
+					<div class="clearfix"></div>
+				</div>
+				<div class="x_content">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="card-box table-responsive">
+								<p class="text-muted font-13 m-b-30">
+									Complete los siguientes campos para crear una nueva Consulta:
+								</p>
+                                <form method="post">{% csrf_token %}
+                                    {{ query_form | crispy}}
+									{{ query_survey_question_form | crispy}}
+                                    <button type="submit" class="btn btn-primary">Confirmar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

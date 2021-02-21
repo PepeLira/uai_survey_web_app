@@ -1,15 +1,14 @@
-from django.views.generic import ListView, TemplateView
+from django.views.generic import ListView, TemplateView, UpdateView, DeleteView, CreateView, DetailView
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from .models import (Survey, Question, OfferedAnswer, SurveyQuestion,
                      SurveyQuestionAnswer, Person, Answer, EquivalentQuestion, SurveyCareer,
-                     Career, QuestionCategory, QuestionQuestionCategory)
+                     Career, QuestionCategory, QuestionQuestionCategory, Dashboard, DashboardQuery)
 import pandas as pd
 
-from .forms import SurveyModelForm, SurveyCareerFormSet
-
+from .forms import SurveyModelForm, SurveyCareerFormSet, DashboardForm, QueryForm, QuerySurveyQuestionForm
 
 
 class SurveyAddView(TemplateView):
@@ -274,17 +273,124 @@ class SurveyAddView(TemplateView):
                                         header=None)
 
                 question_df, person_column_list = self.create_models_from_csv(survey_df, survey_obj)
-                self.create_answers(survey_df,question_df, person_column_list, survey_obj)
+                self.create_answers(survey_df, question_df, person_column_list, survey_obj)
 
             return redirect(reverse_lazy("admin_menu"))
 
         return self.render_to_response({'survey_form': survey_form, 'survey_career_form_set': formset})
 
+
 class SurveysIndexView(ListView):
     model = Survey
     template_name = 'surveys_index.html'
+
+
+class SurveyUpdateView(UpdateView):
+    model = Survey
+    template_name = 'survey_edit.html'
+    form_class = SurveyModelForm
+    # fields = ['title', 'faculty', 'description', 'start_date']
+    # No se podra editar categoria porque de esto depende si los usuarios se pueden repetir por encuesta
+
+    # def get(self, *args, **kwargs):
+    #     survey_form = SurveyModelForm()
+    #     formset = SurveyCareerFormSet(queryset=SurveyCareer.objects.none())
+    #
+    #     return self.render_to_response({'survey_form': survey_form, 'survey_career_form_set': formset})
+    #
+    # def post(self, *args, **kwargs):
+    #     survey_form = SurveyModelForm(self.request.POST or None, self.request.FILES or None)
+    #     formset = SurveyCareerFormSet(data=self.request.POST)
+    #
+    #     if survey_form.is_valid():
+    #         survey_id = survey_form.save().pk
+    #         if formset.is_valid():
+    #             survey_career = formset.save(commit=False)
+    #             for form in survey_career:
+    #                 form.survey_id = survey_id
+    #                 form.save()
+    #
+    #         return redirect(reverse_lazy("survey_edit", survey_id))
+    #
+    #     return self.render_to_response({'survey_form': survey_form, 'survey_career_form_set': formset})
+
+
+class SurveyDelete(DeleteView):
+    model = Survey
+    success_url = reverse_lazy('surveys_index')
+
 
 def load_careers(request):
     faculty = request.GET.get('faculty')
     careers = Career.objects.filter(faculty=faculty).order_by('name')
     return render(request, 'hr/career_dropdown_list_options.html', {'careers': careers})
+
+
+class DashboardAddView(CreateView):
+    template_name = 'create_dashboard.html'
+    form_class = DashboardForm
+    success_url = 'dashboard_detail'
+
+
+class DashboardIndexView(ListView):
+    model = Dashboard
+    template_name = 'dashboard_index.html'
+
+
+class DashboardDeleteView(DeleteView):
+    model = Dashboard
+    success_url = reverse_lazy('dashboard_index')
+
+
+class DashboardDetailView(DetailView):
+    model = Dashboard
+    template_name = 'dashboard_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['dashboard_queries'] = DashboardQuery.objects.filter(dashboard=self.object.id)
+
+        return context
+
+
+class QueryAddView(CreateView):
+    template_name = 'create_query.html'
+
+    # def form_valid(self, form):
+    #     obj_dashboard = Dashboard.objects.get(pk=self.kwargs['pk'])
+    #     obj_dashboard_query = DashboardQuery(dashboard=obj_dashboard, query=self.object)
+    #     return super(QueryAddView,self).form_valid(form)
+    #     # return reverse_lazy('home', kwargs={'pk': self.kwargs['pk']})
+
+    def get_success_url(self):
+        return reverse_lazy('dashboard_detail', kwargs={'pk': self.kwargs['pk']})
+
+    def get(self, *args, **kwargs):
+        query_form = QueryForm
+        query_survey_question_form = QuerySurveyQuestionForm()
+
+        return self.render_to_response({'query_form': query_form,
+                                        'query_survey_question_form': query_survey_question_form})
+
+    def post(self, *args, **kwargs):
+        query_form = QueryForm(self.request.POST or None)
+        query_survey_question_form = QuerySurveyQuestionForm(self.request.POST or None)
+
+        if query_form.is_valid() and query_survey_question_form.is_valid():
+            obj_dashboard = Dashboard.objects.get(pk=self.kwargs['pk'])
+            obj_query = query_form.save()
+            obj_dashboard_query = DashboardQuery(dashboard=obj_dashboard, query=obj_query)
+            obj_dashboard_query.save()
+            query_survey_question_form.save(query_id=obj_query.pk)
+
+        return self.render_to_response({'query_form': query_form,
+                                        'query_survey_question_form': query_survey_question_form})
+
+
+class DashboardView(TemplateView):
+    template_name = "dashboard_Template.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['dashboard_queries'] = DashboardQuery.objects.filter(dashboard=self.kwargs['pk'])
+        return context
