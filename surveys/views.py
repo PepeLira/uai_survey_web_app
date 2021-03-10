@@ -3,12 +3,45 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.contrib import messages
+from django.db.models import Count
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
 from .models import (Survey, Question, OfferedAnswer, SurveyQuestion,
                      SurveyQuestionAnswer, Person, Answer, EquivalentQuestion, SurveyCareer,
-                     Career, QuestionCategory, QuestionQuestionCategory, Dashboard, DashboardQuery)
-import pandas as pd
+                     Career, QuestionCategory, QuestionQuestionCategory, Dashboard, DashboardQuery,
+                     QuerySurveyQuestion, Faculty, Career)
 
 from .forms import SurveyModelForm, SurveyCareerFormSet, DashboardForm, QueryForm, QuerySurveyQuestionForm
+
+import pandas as pd
+
+
+def load_careers(request):
+    faculty = request.GET.get('faculty')
+    careers = Career.objects.filter(faculty=faculty).order_by('name')
+    return render(request, 'hr/career_dropdown_list_options.html', {'careers': careers})
+
+
+def load_preguntas(request):
+    survey = request.GET.get('encuesta')
+    survey_question_objs = SurveyQuestion.objects.filter(survey=survey).order_by('question')
+    return render(request, 'hr/question_dropdown_list_options.html', {'survey_question_objs': survey_question_objs})
+
+
+def remove_survey_monkey_person_questions():
+    list_questions2delete = ['respondent_id', 'collector_id', 'date_created', 'date_modified', 'ip_address',
+                             'email_address', 'first_name', 'last_name', 'custom_1'
+                             ]
+    obj_question_category = QuestionCategory.objects.get(name='Datos Personales:')
+    objs_question_question_category = QuestionQuestionCategory.objects.filter(category=obj_question_category)
+
+    for obj in objs_question_question_category:
+        list_questions2delete.append(obj.question.question_text)
+
+    for q_text in list_questions2delete:
+        Question.objects.get(question_text=q_text).delete()
 
 
 class SurveyAddView(TemplateView):
@@ -172,6 +205,8 @@ class SurveyAddView(TemplateView):
         if created:
             survey_question_obj.save()
 
+
+
     def create_models_from_csv(self, df, survey_obj):
         questions_df = pd.DataFrame(columns=['question', 'type', 'choice', 'category'])
         person_columns_list = []
@@ -274,9 +309,8 @@ class SurveyAddView(TemplateView):
 
                 question_df, person_column_list = self.create_models_from_csv(survey_df, survey_obj)
                 self.create_answers(survey_df, question_df, person_column_list, survey_obj)
-
             return redirect(reverse_lazy("admin_menu"))
-
+        remove_survey_monkey_person_questions()
         return self.render_to_response({'survey_form': survey_form, 'survey_career_form_set': formset})
 
 
@@ -320,16 +354,15 @@ class SurveyDelete(DeleteView):
     success_url = reverse_lazy('surveys_index')
 
 
-def load_careers(request):
-    faculty = request.GET.get('faculty')
-    careers = Career.objects.filter(faculty=faculty).order_by('name')
-    return render(request, 'hr/career_dropdown_list_options.html', {'careers': careers})
-
-
 class DashboardAddView(CreateView):
     template_name = 'create_dashboard.html'
     form_class = DashboardForm
     success_url = 'dashboard_detail'
+
+
+class DashboardAdminIndexView(ListView):
+    model = Dashboard
+    template_name = 'dashboard_admin_index.html'
 
 
 class DashboardIndexView(ListView):
@@ -354,7 +387,7 @@ class DashboardDetailView(DetailView):
 
 
 class QueryAddView(CreateView):
-    template_name = 'create_query.html'
+    template_name = 'create_query2.html'
 
     # def form_valid(self, form):
     #     obj_dashboard = Dashboard.objects.get(pk=self.kwargs['pk'])
@@ -367,7 +400,7 @@ class QueryAddView(CreateView):
 
     def get(self, *args, **kwargs):
         query_form = QueryForm
-        query_survey_question_form = QuerySurveyQuestionForm()
+        query_survey_question_form = QuerySurveyQuestionForm
 
         return self.render_to_response({'query_form': query_form,
                                         'query_survey_question_form': query_survey_question_form})
@@ -375,6 +408,8 @@ class QueryAddView(CreateView):
     def post(self, *args, **kwargs):
         query_form = QueryForm(self.request.POST or None)
         query_survey_question_form = QuerySurveyQuestionForm(self.request.POST or None)
+
+        print(query_survey_question_form, query_form.is_valid())
 
         if query_form.is_valid() and query_survey_question_form.is_valid():
             obj_dashboard = Dashboard.objects.get(pk=self.kwargs['pk'])
@@ -392,5 +427,87 @@ class DashboardView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['dashboard'] = Dashboard.objects.get(id=self.kwargs['pk'])
         context['dashboard_queries'] = DashboardQuery.objects.filter(dashboard=self.kwargs['pk'])
+
+        tables = {}
+
+        for dashboard_query in context['dashboard_queries']:
+            if dashboard_query.query.graph_type == 'Table':
+                answers = []
+                obj_query_survey_question = QuerySurveyQuestion.objects.get(query=dashboard_query.query)
+                objs_survey_question_answers = SurveyQuestionAnswer.objects.filter(
+                    survey_question=obj_query_survey_question.survey_question)
+
+                for obj_survey_question_answers in objs_survey_question_answers:
+                    if obj_survey_question_answers.offered_answer.option_text != 'nan':
+
+                        objs_answer = Answer.objects.filter(survey_question_answer=obj_survey_question_answers)
+                        for obj in objs_answer:
+                            if obj.answer_text != 'nan':
+                                answers.append(obj)
+                tables[dashboard_query.query.name] = answers
+
+        context['table_answers'] = tables
+        print(tables)
+
+        return context
+
+
+class ChartData(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def get(self, request, **kwargs):
+        labels = []
+        values = []
+        question = []
+
+        obj_query_survey_question = QuerySurveyQuestion.objects.get(query=self.kwargs['pk'])
+        objs_survey_question_answers = SurveyQuestionAnswer.objects.filter(
+            survey_question=obj_query_survey_question.survey_question)
+        question.append(obj_query_survey_question.survey_question.question.question_text)
+
+        # Get The labels
+        for question_answers in objs_survey_question_answers:
+            option = question_answers.offered_answer.option_text
+            labels.append(option)
+
+        # Get The values
+        for question_answers in objs_survey_question_answers:
+            n_answers = Answer.objects.filter(survey_question_answer=question_answers).count()
+            values.append(n_answers)
+
+        # Get rid of nan values
+        if obj_query_survey_question.query.include_nan and 'nan' in labels:
+            del values[labels.index('nan')]
+            labels.remove('nan')
+        elif 'nan' in labels:
+            labels[labels.index('nan')] = 'Nulo'
+
+        # Change to %
+        if obj_query_survey_question.query.percentage_values:
+            values = [round(x*100 / sum(values),2) for x in values]
+
+        data = {
+            "labels": labels,
+            "values": values,
+            "question": question,
+        }
+        return Response(data)
+
+
+class FacultyAdminIndexView(ListView):
+    model = Faculty
+    template_name = 'facultys_admin_index.html'
+
+
+class FacultyDetailView(DetailView):
+    model = Faculty
+    template_name = 'faculty_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['faculty_careers'] = Career.objects.filter(faculty=self.object.id)
+
         return context

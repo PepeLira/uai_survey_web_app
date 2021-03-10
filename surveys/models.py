@@ -142,22 +142,24 @@ class Privileges(models.Model):
 
 
 class Query(models.Model):
-    BAR = 'Bar Chart'
-    COMPARATIVE_BAR = 'Comparative Bar Chart'
-    PIE = 'Pie Chart'
+    BAR = 'Bar_Chart'
+    COMPARATIVE_BAR = 'Comparative_Bar_Chart'
+    PIE = 'Pie_Chart'
     TABLE = 'Table'
 
     AVAILABLE_GRAPH_TYPES = [
-        ('Bar Chart', BAR),
-        ('Comparative Bar Chart', COMPARATIVE_BAR),
-        ( 'Pie Chart', PIE),
-        ( 'Table', TABLE),
+        (BAR, 'Bar Chart'),
+        (COMPARATIVE_BAR, 'Comparative Bar Chart'),
+        (PIE, 'Pie Chart'),
+        (TABLE, 'Table'),
     ]
 
     name = models.CharField(max_length=150)
     description = models.TextField(max_length=300)
     graph_type = models.CharField(max_length=300, choices=AVAILABLE_GRAPH_TYPES, default='Table')
-    privilege = models.ForeignKey(Privileges, on_delete=models.CASCADE)
+    privilege = models.ForeignKey(Privileges, on_delete=models.CASCADE, default=1)
+    percentage_values = models.BooleanField(default=False)
+    include_nan = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -191,6 +193,7 @@ class Dashboard(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField(max_length=300, blank=True)
     period = models.ForeignKey(Period, on_delete=models.SET_NULL, blank=True, related_name='period', null=True)
+    upload_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name

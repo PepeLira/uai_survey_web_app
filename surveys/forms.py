@@ -67,29 +67,67 @@ class DashboardForm(forms.ModelForm):
 class QueryForm(forms.ModelForm):
     class Meta:
         model = Query
-        fields = ('name', 'description', 'graph_type', 'privilege')
+        fields = ('name', 'description', 'graph_type', 'privilege', 'percentage_values', 'include_nan')
+        BAR = 'Bar Chart'
+        COMPARATIVE_BAR = 'Comparative Bar Chart'
+        PIE = 'Pie Chart'
+        TABLE = 'Table'
+
+        AVAILABLE_GRAPH_TYPES = [
+            (BAR, 'Bar Chart'),
+            (COMPARATIVE_BAR, 'Comparative Bar Chart'),
+            (PIE, 'Pie Chart'),
+            (TABLE, 'Table'),
+        ]
 
         labels = {
             'name': 'Titulo',
             'description': 'Descripción',
             'graph_type': 'Tipo de Grafico',
             'privilege': 'Nivel de Acceso',
+            'percentage_values': 'Valores en %',
+            'include_nan': 'Incluir Respuestas Nulas'
+
+        }
+
+        widgets = {
+            'name': forms.TextInput(attrs={'class': "form-control"}),
+            'description': forms.Textarea(attrs={'class': "form-control", 'rows': "5", 'placeholder': "texto..."}),
+            'graph_type': forms.RadioSelect(choices=AVAILABLE_GRAPH_TYPES, attrs={'class': "flat"}),
+            'privilege': forms.RadioSelect(choices=AVAILABLE_GRAPH_TYPES, attrs={'class': "flat"}),
+            'percentage_values': forms.CheckboxInput(attrs={'class': "flat"}),
+            'include_nan': forms.CheckboxInput(attrs={'class': "flat"}),
         }
 
 
 class QuerySurveyQuestionForm(forms.ModelForm):
-    survey = forms.ModelChoiceField(queryset=Survey.objects.all())
-    question = forms.ModelChoiceField(queryset=Question.objects.all())
+    encuesta = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                'class': "form-control", 'type': "text", 'list': "surveylist", 'placeholder': "Buscar Encuesta..."
+            }))
+
+    question_queryset = Question.objects.all()
+
+    pregunta = forms.ModelChoiceField(queryset=question_queryset,
+                                      widget=forms.Select(
+                                          attrs={
+                                              'class': "form-control"
+                                          }))
+
+    survey_queryset = Survey.objects.all()
 
     class Meta:
         model = QuerySurveyQuestion
-        fields = ['survey', 'question']
+        fields = ['encuesta', 'pregunta']
 
     def save(self, commit=True, query_id=None):
         instance = super(QuerySurveyQuestionForm, self).save(commit=False)
-        _survey = self.cleaned_data.get('survey')
-        _question = self.cleaned_data.get('question')
-        obj_survey_question = SurveyQuestion.objects.get(survey=_survey, question=_question)
+        _survey = self.cleaned_data.get('encuesta')
+        _survey = int(_survey.split('.')[0])
+        _question = self.cleaned_data.get('pregunta')
+        obj_question = Question.objects.get(question_text=_question)
+        obj_survey_question = SurveyQuestion.objects.get(survey=_survey, question=obj_question)
         instance.survey_question = obj_survey_question
         instance.query_id = query_id
         instance.save()

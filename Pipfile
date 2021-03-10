@@ -10,6 +10,9 @@ django-bootstrap4 = "*"
 numpy = "*"
 pandas = "*"
 django-pandas = "*"
+djangorestframework = "*"
+markdown = "*"
+django-filter = "*"
 
 [dev-packages]
 

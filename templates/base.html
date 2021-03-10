@@ -30,7 +30,7 @@
 				<div class="col-md-3 left_col">
 					<div class="left_col scroll-view">
 						<div class="navbar nav_title" style="border: 0;">
-							<a href="{% url 'home' %}" class="site_title"><i class="fa fa-bar-chart-o"></i> <span>Encuestas UAI</span></a>
+							<a href="{% url 'home' %}" class="site_title"><i class="fa fa-bar-chart-o"></i> <span>Encuestas UAI <small>Beta</small></span></a>
 						</div>
 						<div class="clearfix"></div>
 						<br />
@@ -41,17 +41,17 @@
 								<ul class="nav side-menu">
 									<li><a><i class="fa fa-home"></i> Home <span class="fa fa-chevron-down"></span></a>
 										<ul class="nav child_menu">
-											<li><a href="{% url 'home' %}">Dashboard</a></li>
-											<li><a href="{% url 'dashboard_template' 2 %}">Dashboard Prueba</a></li>
+											<li><a href="{% url 'dashboard_index' %}">Informes Disponibles</a></li>
+											<li><a href="{% url 'dashboard_template' 2 %}">Último Informe</a></li>
 										</ul>
 									</li>
 									<li>
 										<a><i class="fa fa-pencil-square-o"></i> Admin <span class="fa fa-chevron-down"></span></a>
 										<ul class="nav child_menu">
-											<li><a href="{% url 'dashboard_index' %}">Administrar Dashboards</a></li>
+											<li><a href="{% url 'dashboard_admin_index' %}">Administrar Informes</a></li>
 											<li><a href="{% url 'surveys_index' %}">Administrar Encuestas</a></li>
 											<li><a href="{% url 'upload_csv' %}">Agregar Encuestas +</a></li>
-											<li><a href="{% url 'admin_menu' %}">Facultades / Carreras</a></li>
+											<li><a href="{% url 'faculty_admin_index' %}">Facultades / Carreras</a></li>
 											<li><a href="#">Usuarios</a></li>
 										</ul>
 									</li>
@@ -141,7 +141,7 @@
 		{% block javascript %}{% endblock %}
 
 		<!-- Custom Theme Scripts -->
-		<script src="{% static 'build/js/custom.min.js' %}"></script>
+		<script src="{% static 'build/js/custom.js' %}"></script>
 
 	</body>
 </html>

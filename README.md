@@ -23,7 +23,7 @@ Estas encuestas se realizan por medio de la plataforma [SurveyMonkey](https://es
 exportar los resultados en múltiples formatos.
 
 
-#### 1. Desarrollo
+### 1. Desarrollo
 
 Como solución se presenta una aplicación web, la cual por medio de un sistema de control de usuarios 
 permitirá acceder a los resultados más relevantes de cada encuesta. Además, a nivel de administrador, 
@@ -46,14 +46,31 @@ lo que facilitará la comprensión y el fujo de trabajo de este proyecto.
 
 El modelo de la base de datos fue diseñado sobre tres ideas generales: "Control de Usuarios", 
 "Administración de Encuestas" y "Carga de Encuestas". Siguiendo el siguiente [Modelo ER](), se presenta un modelo que busca
-facilitar la carga de cualquier tipo de encuestas. En 
+facilitar la carga de cualquier tipo de encuestas. En este, se presentan las relaciones de las siguientes Entidades:
 
+1. Encuestas (Surveys)
+   1. Categoria de Encuesta (QuestionCategory): Por ejemplo para agrupar todas las *Encuestas de Empleabilidad Anuales*.
+   2. Periodo (Period): Para identificar las encuestas que pertenecen a un mismo periodo de tiempo.
+2. Preguntas (Questions)
+   1. Categorias de Pregunta (QuestionCategory): Conjunto de preguntas, de momento solo se encuentra *Datos Personales*.
+   2. Preguntas Equivalentes (Equivalent Questions): Revisar punto 4.2
+3. Alternativas (OfferedAnswers): Las respuestas disponibles para una pregunta de selección multiple o de alternativas.
+4. Respuestas (Answers)
+5. Persona (Person): Autor de cada respuesta Individual con su info de contacto.
+6. Informes (Dashboards): Conjunto de Gráficos Que pueden pertenecer a una o más encuestas.
+7. Consultas/Graficos (Querys): En base a una pregunta seleccionada agrupa todas las respuestas para presentarlas en un gráfico.
+8. Facultades (Faculty)
+9. Carreras (Careers)
+10. Usuarios (Users)
+11. Niveles de Acceso (Privileges): Para Regular el acceso a la información dependiendo del Usuario.
+
+*nota: Además de las ya mencionadas también podemos encontrar multiples tablas relacionales*
 ##### 1.3 Deployment
 
 ##### 1.4 Seguridad
 
 
-#### 2 Guía Ininicio Rápida
+### 2 Guía Ininicio Rápida
 
 Como es habitual en los proyectos de aplicaciones Web, lo primero que se debe hacer es iniciar el ambiente virtual sobre 
 el que se está desarrollando. Para esto utilizaremos Pipenv, de no tenerlo instalado siempre se puede instalar con el comando
@@ -79,6 +96,33 @@ Por ultimo para iniciar el servidor local:
 y ingresamos al link que nos entrega la consola 
 
     $ http://127.0.0.1:8000/
+
+### 3 Aplicaciones / Vistas / Formularios
+
+***Descripción de los controladores de cada Vista***
+
+### 4 Mejoras Próximas
+
+Para continuar ampliando la funcionalidad de esta página, se presentan algunas posibles mejoras al
+modelo y la estructura de la página.
+
+#### 4.1 Tablas de datos "Consultas" y "Gráficos"
+
+Con la finalidad de poder realizar gráficos con datos cruzados, se propone la siguiente modificación al
+modelo de la base de datos [Nuevo Modelo ER](). *"Un Grafico tiene una o más consultas 
+y una consulta pertenece a un grafico"*, donde se entiende por "Consulta" un conjunto de datos que 
+contienen una pregunta de la encuesta y sus respectivas respuestas. 
+
+De esta manera se podrán realizar gráficos de Consultas como por ejemplo:
+
+*"Numero Ex alumnos que se encuentren trabajando y hayan cursado un Magister"*
+
+#### 4.2 Implementar Tabla Preguntas Equivalentes
+
+Para poder reutilizar informes anteriores con un grupo de encuestas nuevas. Para esto será necesario crear un formulario 
+que permita comparar las preguntas de una encuesta recientemente cargada con las que se 
+encuentran ya disponibles en la Base de datos. De esta manera, se tendrá la información necesaria para ofrecerle a 
+los administradores replicar algunos de los gráficos de un informe anterior al crear un Nuevo Informe.
 
 
 ### Comentarios

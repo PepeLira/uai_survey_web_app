@@ -1,0 +1,6 @@
+<option value="">---------</option>
+{% for pregunta in survey_question_objs %}
+<option value="{{ pregunta.question.pk }}" question_type="{{ pregunta.question.type }}">{{ pregunta.question }} - - {{ pregunta.question.type }}</option>
+{% endfor %}
+
+

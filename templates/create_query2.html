@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% block title %}Nueva Consulta{% endblock title %}
+
+{% block stylesheet %}
+<!-- iCheck -->
+<link href="{% static 'vendors/iCheck/skins/flat/green.css' %}" rel="stylesheet">
+<!-- bootstrap-wysiwyg -->
+<link href="{% static 'vendors/google-code-prettify/bin/prettify.min.css' %}" rel="stylesheet">
+<!-- Select2 -->
+<link href="{% static 'vendors/select2/dist/css/select2.min.css' %}" rel="stylesheet">
+<!-- Switchery -->
+<link href="{% static 'vendors/switchery/dist/switchery.min.css' %}" rel="stylesheet">
+<!-- starrr -->
+<link href="{% static 'vendors/starrr/dist/starrr.css' %}" rel="stylesheet">
+<!-- bootstrap-daterangepicker -->
+<link href="{% static 'vendors/bootstrap-daterangepicker/daterangepicker.css' %}" rel="stylesheet">
+
+<!-- Datatables -->
+<link href="{% static 'vendors/datatables.net-bs/css/dataTables.bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css' %}" rel="stylesheet">
+
+{% endblock %}
+
+{% block content %}
+<div class="">
+	<div class="page-title">
+		<div class="title_left">
+			<h3>Nueva Consulta</h3>
+		</div>
+	</div>
+	<div class="clearfix"></div>
+		<form method="post" class="form-horizontal form-label-left"  id="queryForm" data-preguntas-url="{% url 'ajax_load_preguntas' %}" >{% csrf_token %}
+
+<!-- <Datos Generales Consulta> -->
+
+			<div class="row">
+				<div class="col-md-12 col-sm-12 ">
+					<div class="x_panel">
+						<div class="x_title">
+							<h2>Campos Consulta</h2>
+							<div class="clearfix"></div>
+						</div>
+						<div class="x_content">
+							<div class="row">
+								<div class="col-sm-12">
+									<div class="card-box table-responsive">
+										<p class="text-muted font-13 m-b-30">
+											Complete los siguientes campos para crear una nueva Consulta:
+										</p>
+
+										{{ query_form.name.non_field_errors  }}
+										{{ query_survey_question_form.name.non_field_errors  }}
+										<div class="item form-group">
+											{{ query_form.name.errors }}
+											<label class="col-form-label col-md-3 col-sm-3 label-align">{{ query_form.name.label}}: <span class="required">*</span>
+											</label>
+											<div class="col-md-6 col-sm-6 ">
+												{{ query_form.name }}
+											</div>
+										</div>
+										<div class="item form-group">
+											{{ query_form.description.errors }}
+											<label class="col-form-label col-md-3 col-sm-3 label-align">{{ query_form.description.label}}: <span class="required">*</span>
+											</label>
+											<div class="col-md-6 col-sm-6 ">
+												{{ query_form.description }}
+											</div>
+										</div><br>
+
+
+										<div class="item form-group">
+											<label class="col-form-label col-md-3 col-sm-3 label-align" >{{ query_survey_question_form.encuesta.label}}:</label>
+											<div class="col-md-6 col-sm-6 ">
+												{{ query_survey_question_form.encuesta }}
+												<datalist id="surveylist">
+													{% for survey in query_survey_question_form.survey_queryset %}
+														<option value="{{ survey.pk }}. {{ survey }}"></option>
+													{% endfor %}
+												</datalist>
+											</div>
+										</div>
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+<!-- </Datos Generales Consulta> -->
+
+<!-- <Tabla Preguntas disponibles> -->
+
+			<div class="row">
+				<div class="col-md-12 col-sm-12 ">
+					<div class="x_panel">
+						<div class="x_title">
+							<h2>Preguntas Disponibles</h2>
+							<div class="clearfix"></div>
+						</div>
+						<div class="x_content">
+							<div class="row">
+								<div class="col-sm-12">
+									<div class="card-box table-responsive">
+										<p class="text-muted font-13 m-b-30">
+											Antes de elegir una pregunta, seleccione una Encuesta para ver las preguntas disponibles.
+										</p>
+										<div class="item form-group">
+											<label class="col-form-label col-md-3 col-sm-3 label-align" >{{ query_survey_question_form.pregunta.label}}:</label>
+											<div class="col-md-6 col-sm-6" id="preguntas_disponibles">
+
+												{{ query_survey_question_form.pregunta }}
+
+											</div>
+										</div>
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+<!-- </Tabla Preguntas disponibles> -->
+
+<!-- <Graficos y Niveles de Acceso> -->
+
+			<div class="row">
+				<div class="col-md-12 col-sm-12 ">
+					<div class="x_panel">
+						<div class="x_title">
+							<h2>Campos Grafico</h2>
+							<div class="clearfix"></div>
+						</div>
+						<div class="x_content">
+							<div class="row">
+								<div class="col-sm-12">
+									<div class="card-box table-responsive">
+										<p class="text-muted font-13 m-b-30">
+											Complete los siguientes campos para crear un nuevo Grafico, los gráficos disponibles dependen del tipo de pregunta seleccionada.
+										</p>
+
+										<div class="item form-group">
+											{{ query_form.graph_type.errors }}
+											<label class="col-form-label col-md-3 col-sm-3 label-align"> {{ query_form.graph_type.label}}:
+												<br>
+												<small class="text-navy">Elija uno de los 4 gráficos disponibles </small>
+											</label>
+											<div class="radio">
+												{% for graph in query_form.graph_type %}
+													{{ graph }}<br>
+												{% endfor %}
+											</div>
+
+										</div>
+										<div class="item form-group">
+											{{ query_form.privilege.errors }}
+											<label class="col-form-label col-md-3 col-sm-3 label-align"> {{ query_form.privilege.label}}:
+												<br>
+												<small class="text-navy">Elija uno de los 3 niveles de acceso disponibles</small>
+											</label>
+											<div class="radio">
+												<label>
+													{% for priv in query_form.privilege %}
+														{{ priv }}<br>
+													{% endfor %}
+												</label>
+											</div>
+
+										</div>
+
+										<div class="item form-group">
+											{{ query_form.percentage_values.errors }}
+											<label class="col-form-label col-md-3 col-sm-3 label-align">{{ query_form.percentage_values.label}}: <span class="required">*</span>
+											</label>
+											<div class="col-md-6 col-sm-6 ">
+												{{ query_form.percentage_values }}
+											</div>
+										</div>
+
+										<div class="item form-group">
+											{{ query_form.include_nan.errors }}
+											<label class="col-form-label col-md-3 col-sm-3 label-align">{{ query_form.include_nan.label}}: <span class="required">*</span>
+											</label>
+											<div class="col-md-6 col-sm-6 ">
+												{{ query_form.include_nan }}
+											</div>
+										</div>
+
+										<div class="ln_solid"></div>
+										<div class="form-group">
+											<div class="col-md-9 col-sm-9  offset-md-3">
+												<button type="button" class="btn btn-primary">Cancel</button>
+												<button type="reset" class="btn btn-primary">Reset</button>
+												<button type="submit" class="btn btn-success">Confirmar</button>
+											</div>
+										</div>
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+<!-- </>Graficos y Niveles de Acceso> -->
+
+		</form>
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascript %}
+
+<script>
+
+$("#id_encuesta").change(function () {
+  var url = $("#queryForm").attr("data-preguntas-url");
+  var encuestaID = $(this).val();
+  encuestaID = Number(encuestaID.split('.')[0]);
+
+
+  $.ajax({
+	url: url,
+	data: {
+	  'encuesta': encuestaID
+	},
+	success: function (data) {
+	  $('[id^="id_pregunta"]').html(data);
+	}
+  });
+});
+
+$("#id_pregunta").change(function () {
+  var question_type = $(this).find(":selected").attr("question_type");
+
+  if (question_type == "Open-Ended Text Response" ) {
+     $("#id_graph_type_0").attr('disabled','disabled');
+     $("#id_graph_type_1").attr('disabled','disabled');
+     $("#id_graph_type_2").attr('disabled','disabled');
+  }
+  if (question_type != "Open-Ended Text Response" ) {
+     $("#id_graph_type_0").removeAttr('disabled');
+     $("#id_graph_type_1").attr('disabled','disabled');
+     $("#id_graph_type_2").removeAttr('disabled');
+  };
+
+});
+
+</script>
+
+
+<!-- bootstrap-progressbar -->
+<script src="{% static 'vendors/bootstrap-progressbar/bootstrap-progressbar.min.js' %}"></script>
+<!-- iCheck -->
+<script src="{% static 'vendors/iCheck/icheck.min.js' %}"></script>
+<!-- bootstrap-daterangepicker -->
+<script src="{% static 'vendors/moment/min/moment.min.js' %}"></script>
+<script src="{% static 'vendors/bootstrap-daterangepicker/daterangepicker.js' %}"></script>
+<!-- bootstrap-wysiwyg -->
+<script src="{% static 'vendors/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js' %}"></script>
+<script src="{% static 'vendors/jquery.hotkeys/jquery.hotkeys.js' %}"></script>
+<script src="{% static 'vendors/google-code-prettify/src/prettify.js' %}"></script>
+<!-- jQuery Tags Input -->
+<script src="{% static 'vendors/jquery.tagsinput/src/jquery.tagsinput.js' %}"></script>
+<!-- Switchery -->
+<script src="{% static 'vendors/switchery/dist/switchery.min.js' %}"></script>
+<!-- Select2 -->
+<script src="{% static 'vendors/select2/dist/js/select2.full.min.js' %}"></script>
+<!-- Parsley -->
+<script src="{% static 'vendors/parsleyjs/dist/parsley.min.js' %}"></script>
+<!-- Autosize -->
+<script src="{% static 'vendors/autosize/dist/autosize.min.js' %}"></script>
+<!-- jQuery autocomplete -->
+<script src="{% static 'vendors/devbridge-autocomplete/dist/jquery.autocomplete.min.js' %}"></script>
+<!-- starrr -->
+<script src="{% static 'vendors/starrr/dist/starrr.js' %}"></script>
+
+
+
+
+{% endblock %}

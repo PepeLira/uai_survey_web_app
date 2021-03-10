@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     'crispy_forms',
     'bootstrap4',
 
+    # Django-Rest-Framework
+    'rest_framework',
+
     # local
                                                                                    
     'users.apps.UsersConfig',
